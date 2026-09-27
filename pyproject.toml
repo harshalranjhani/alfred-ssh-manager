@@ -1,0 +1,12 @@
+[project]
+name = "alfred-ssh-manager"
+version = "1.0.0"
+description = "Search and launch OpenSSH destinations from Alfred"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+build/
+dist/*
+!dist/Alfred-SSH-Manager.alfredworkflow
+.DS_Store
