@@ -796,6 +796,8 @@ Alfred stores mutable files under `$alfred_workflow_data`: `aliases.json` and `h
 
 Run `make test`, `make build`, and `make lint`. The package is written to `dist/Alfred-SSH-Manager.alfredworkflow`. Search can be exercised without Alfred: `python3 scripts/ssh_search.py prod`. Tests create temporary SSH files and do not depend on the machine's live SSH configuration.
 
+To publish a release, push a version tag such as `v1.0.0`. The GitHub Actions release workflow tests and builds that revision, creates a GitHub release, and attaches the `.alfredworkflow` file. Publishing a release manually also triggers an asset build if the release has no workflow file yet.
+
 If a source file is unreadable or aliases JSON is invalid, Alfred shows a warning row while continuing to load healthy sources. If Python is unavailable at `/usr/bin/python3`, install the macOS Command Line Tools or change the interpreter path in `tools/build.py` and rebuild. To change the terminal, use Alfred's Features → Terminal settings; the workflow uses Alfred's Terminal Command action.
 </string>
 	<key>uidata</key>
