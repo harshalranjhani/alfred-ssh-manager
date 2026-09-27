@@ -109,7 +109,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(types.count("alfred.workflow.input.scriptfilter"), 4)
         self.assertEqual(types.count("alfred.workflow.action.terminalcommand"), 2)
         self.assertIn("alfred.workflow.userinterface.text", types)
-        self.assertEqual(workflow["bundleid"], "com.harshal.alfred-ssh-manager")
+        self.assertEqual(workflow["bundleid"], "in.harshalranjhani.alfred-ssh-manager")
         object_ids = {obj["uid"] for obj in workflow["objects"]}
         for source, destinations in workflow["connections"].items():
             self.assertIn(source, object_ids)

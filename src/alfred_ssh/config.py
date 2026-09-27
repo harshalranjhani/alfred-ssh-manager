@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
-BUNDLE_ID = "com.harshal.alfred-ssh-manager"
+BUNDLE_ID = "in.harshalranjhani.alfred-ssh-manager"
 
 
 def expanded_path(value: str) -> Path:

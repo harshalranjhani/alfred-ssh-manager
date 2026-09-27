@@ -129,7 +129,7 @@ def make_plist():
         config_field("SHOW_USERNAMES", "Show usernames", True, "Show User from simple Host blocks"),
         config_field("ENABLE_HISTORY", "Enable history", True, "Record session launches in Alfred workflow data"),
     ]
-    return {"bundleid": "com.harshal.alfred-ssh-manager", "category": "Internet", "createdby": "Harshal Ranjhani",
+    return {"bundleid": "in.harshalranjhani.alfred-ssh-manager", "category": "Internet", "createdby": "Harshal Ranjhani",
             "description": "Search, alias, inspect and launch OpenSSH sessions.", "disabled": False,
             "name": "Alfred SSH Manager", "version": "1.0.1", "webaddress": "",
             "readme": (ROOT / "README.md").read_text(encoding="utf-8"),

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>bundleid</key>
-	<string>com.harshal.alfred-ssh-manager</string>
+	<string>in.harshalranjhani.alfred-ssh-manager</string>
 	<key>category</key>
 	<string>Internet</string>
 	<key>connections</key>
