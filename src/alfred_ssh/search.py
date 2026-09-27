@@ -106,7 +106,7 @@ def search_output(entries: list[HostEntry], errors: list[str], query: str, setti
     elif query == ":refresh":
         items = [info_item("Host list refreshed", "Sources are read fresh on every search")]
     elif query == ":help":
-        items = [info_item("SSH Manager", "Enter: SSH · ⌘: Copy · ⌥: SFTP · ⌃: Inspect · ⇧: Edit"), info_item("Commands", ":recent · :fav · :aliases · :config · :refresh · :help")]
+        items = [info_item("SSH Manager", "Enter: SSH · ⌘: Copy · ⌥: SFTP · ⌃: Inspect · ⇧: Edit"), info_item("Commands", ":recent · :fav · :aliases · :config · :refresh · :help"), info_item("Forget a recent session", "Use sshforget and select the entry to remove")]
     else:
         items = [item(entry, settings) for entry in select(entries, query)]
         if not items and query == ":fav":

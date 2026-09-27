@@ -8,6 +8,19 @@
 	<string>Internet</string>
 	<key>connections</key>
 	<dict>
+		<key>1F799A78-B721-59FF-904B-2CD2076F5040</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>336C20FB-968A-5240-B587-DF11A64FA957</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>200BBA4A-B939-5B54-ABF5-5490DF8A5797</key>
 		<array>
 			<dict>
@@ -214,6 +227,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>F2753926-0A3B-5858-A9A9-66D892CFC4CC</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1F799A78-B721-59FF-904B-2CD2076F5040</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Harshal Ranjhani</string>
@@ -375,6 +401,55 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>keyword</key>
+				<string>sshforget</string>
+				<key>queuedelaycustom</key>
+				<integer>0</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Loading SSH hosts…</string>
+				<key>script</key>
+				<string>/usr/bin/python3 scripts/history_forget.py "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Remove an entry from Recent</string>
+				<key>title</key>
+				<string>Forget SSH session</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>F2753926-0A3B-5858-A9A9-66D892CFC4CC</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>argumenttype</key>
 				<integer>2</integer>
 				<key>keyword</key>
@@ -480,6 +555,29 @@
 			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
 			<string>A2241166-6E42-565A-AE06-1E550A3B3DDE</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>0</integer>
+				<key>script</key>
+				<string>/usr/bin/python3 scripts/history_mutate.py "$1"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>1F799A78-B721-59FF-904B-2CD2076F5040</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -780,6 +878,8 @@ Type `ssh` to see favorites and recent hosts, or `ssh prod` to search names, tar
 
 Useful searches: `ssh :recent`, `ssh :fav`, `ssh :aliases`, `ssh :config`, `ssh :help`, and `ssh :refresh`. The workflow rereads files on every search, so `:refresh` only confirms this. If a normal query has no match, the workflow offers a direct SSH connection to that token.
 
+If a direct connection fails, it may still appear in Recent because the workflow records a launch before SSH exits. Type `sshforget`, find the target, and press Return to remove its history entry. This does not delete SSH config hosts or Alfred aliases.
+
 ## Aliases
 
 Use `ssha prod=production-api` to create or update an Alfred alias, then `ssh prod` to connect. Add metadata with `ssha prod=production-api --fav --tag work --description "Main production server"`. Use `sshrm prod` to find and remove aliases. These commands only change `aliases.json`, never SSH config. You can also edit that JSON file from an alias result with Shift + Return. Existing favorite, tags, and description are preserved when updating an alias unless replaced by supplied options.
@@ -802,6 +902,13 @@ If a source file is unreadable or aliases JSON is invalid, Alfred shows a warnin
 </string>
 	<key>uidata</key>
 	<dict>
+		<key>1F799A78-B721-59FF-904B-2CD2076F5040</key>
+		<dict>
+			<key>xpos</key>
+			<real>260.0</real>
+			<key>ypos</key>
+			<real>1090.0</real>
+		</dict>
 		<key>200BBA4A-B939-5B54-ABF5-5490DF8A5797</key>
 		<dict>
 			<key>xpos</key>
@@ -920,6 +1027,13 @@ If a source file is unreadable or aliases JSON is invalid, Alfred shows a warnin
 			<real>40.0</real>
 			<key>ypos</key>
 			<real>730.0</real>
+		</dict>
+		<key>F2753926-0A3B-5858-A9A9-66D892CFC4CC</key>
+		<dict>
+			<key>xpos</key>
+			<real>40.0</real>
+			<key>ypos</key>
+			<real>1090.0</real>
 		</dict>
 		<key>FBF58E5C-FB48-55F0-B93F-78165E2B5A17</key>
 		<dict>
@@ -1066,7 +1180,7 @@ If a source file is unreadable or aliases JSON is invalid, Alfred shows a warnin
 		<string>~/.ssh/config</string>
 	</dict>
 	<key>version</key>
-	<string>1.0.0</string>
+	<string>1.0.1</string>
 	<key>webaddress</key>
 	<string></string>
 </dict>

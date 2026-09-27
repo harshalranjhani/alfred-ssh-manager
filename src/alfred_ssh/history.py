@@ -15,3 +15,12 @@ def record(path: Path, target: str) -> None:
     old = data.get(target, {})
     data[target] = {"last_used": time.time(), "usage_count": int(old.get("usage_count", 0)) + 1}
     write_json(path, data)
+
+
+def forget(path: Path, target: str) -> bool:
+    data = load_history(path)
+    if target not in data:
+        return False
+    del data[target]
+    write_json(path, data)
+    return True

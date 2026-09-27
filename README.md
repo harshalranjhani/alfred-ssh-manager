@@ -20,6 +20,8 @@ Type `ssh` to see favorites and recent hosts, or `ssh prod` to search names, tar
 
 Useful searches: `ssh :recent`, `ssh :fav`, `ssh :aliases`, `ssh :config`, `ssh :help`, and `ssh :refresh`. The workflow rereads files on every search, so `:refresh` only confirms this. If a normal query has no match, the workflow offers a direct SSH connection to that token.
 
+If a direct connection fails, it may still appear in Recent because the workflow records a launch before SSH exits. Type `sshforget`, find the target, and press Return to remove its history entry. This does not delete SSH config hosts or Alfred aliases.
+
 ## Aliases
 
 Use `ssha prod=production-api` to create or update an Alfred alias, then `ssh prod` to connect. Add metadata with `ssha prod=production-api --fav --tag work --description "Main production server"`. Use `sshrm prod` to find and remove aliases. These commands only change `aliases.json`, never SSH config. You can also edit that JSON file from an alias result with Shift + Return. Existing favorite, tags, and description are preserved when updating an alias unless replaced by supplied options.

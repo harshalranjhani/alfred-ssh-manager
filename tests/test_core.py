@@ -11,7 +11,7 @@ from zipfile import ZipFile
 from alfred_ssh.aliases import alias_entries, load_aliases, parse_add_spec, remove_alias, save_alias
 from alfred_ssh.config import Settings
 from alfred_ssh.discovery import discover
-from alfred_ssh.history import record
+from alfred_ssh.history import forget, load_history, record
 from alfred_ssh.hosts_file import discover_hosts_file
 from alfred_ssh.known_hosts import discover_known_hosts
 from alfred_ssh.search import search_output
@@ -83,6 +83,17 @@ class DiscoveryTests(unittest.TestCase):
         result = search_output(entries, errors, ":recent", self.settings)["items"]
         self.assertEqual(result[0]["uid"], "history:oneoff.example.com")
 
+    def test_forget_removes_only_selected_history_entry(self):
+        path = self.data / "history.json"
+        record(path, "typo.example.com")
+        record(path, "good.example.com")
+        self.assertTrue(forget(path, "typo.example.com"))
+        self.assertFalse(forget(path, "typo.example.com"))
+        self.assertEqual(list(load_history(path)), ["good.example.com"])
+        entries, errors = discover(self.settings)
+        self.assertFalse(errors)
+        self.assertEqual([item["arg"] for item in search_output(entries, errors, ":recent", self.settings)["items"]], ["good.example.com"])
+
     def test_alias_cycles_are_rejected(self):
         path = self.data / "aliases.json"
         save_alias(path, "a", {"target": "b"})
@@ -95,7 +106,7 @@ class WorkflowTests(unittest.TestCase):
         subprocess.run([sys.executable, str(ROOT / "tools" / "build.py")], check=True, capture_output=True, text=True)
         workflow = plistlib.loads((ROOT / "workflow" / "info.plist").read_bytes())
         types = [obj["type"] for obj in workflow["objects"]]
-        self.assertEqual(types.count("alfred.workflow.input.scriptfilter"), 3)
+        self.assertEqual(types.count("alfred.workflow.input.scriptfilter"), 4)
         self.assertEqual(types.count("alfred.workflow.action.terminalcommand"), 2)
         self.assertIn("alfred.workflow.userinterface.text", types)
         self.assertEqual(workflow["bundleid"], "com.harshal.alfred-ssh-manager")
@@ -105,7 +116,7 @@ class WorkflowTests(unittest.TestCase):
             for destination in destinations:
                 self.assertIn(destination["destinationuid"], object_ids)
         with ZipFile(ROOT / "dist" / "Alfred-SSH-Manager.alfredworkflow") as archive:
-            self.assertTrue({"info.plist", "icon.png", "scripts/ssh_search.py", "src/alfred_ssh/discovery.py"}.issubset(archive.namelist()))
+            self.assertTrue({"info.plist", "icon.png", "scripts/ssh_search.py", "scripts/history_forget.py", "src/alfred_ssh/discovery.py"}.issubset(archive.namelist()))
             with tempfile.TemporaryDirectory() as temp:
                 archive.extractall(temp)
                 env = {**os.environ, "SSH_CONFIG": str(Path(temp) / "missing_config"),
@@ -124,6 +135,19 @@ class WorkflowTests(unittest.TestCase):
                                     env=env, capture_output=True, text=True, check=True)
             self.assertEqual(output.stdout.strip(), "'host;touch-pwned'")
             self.assertEqual(json.loads((Path(temp) / "history.json").read_text())["host;touch-pwned"]["usage_count"], 1)
+
+    def test_forget_keyword_removes_a_failed_direct_connection(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "history.json"
+            record(path, "soijafiouhasf")
+            env = {**os.environ, "alfred_workflow_data": temp}
+            search = subprocess.run([sys.executable, str(ROOT / "scripts" / "history_forget.py"), "soij"],
+                                    env=env, capture_output=True, text=True, check=True)
+            self.assertEqual(json.loads(search.stdout)["items"][0]["arg"], "soijafiouhasf")
+            mutate = subprocess.run([sys.executable, str(ROOT / "scripts" / "history_mutate.py"), "soijafiouhasf"],
+                                    env=env, capture_output=True, text=True, check=True)
+            self.assertIn("Forgot SSH session", mutate.stdout)
+            self.assertEqual(load_history(path), {})
 
 
 if __name__ == "__main__":
