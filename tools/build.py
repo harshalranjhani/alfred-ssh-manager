@@ -61,6 +61,7 @@ def config_field(variable, label, default, description):
 def make_plist():
     objects = [
         script_filter("search", "ssh", '/usr/bin/python3 scripts/ssh_search.py "$1"', "SSH Manager", "Search SSH destinations, aliases, and recent sessions"),
+        script_filter("setup", "sshsetup", '/usr/bin/python3 scripts/ssh_setup.py "$1"', "Set up SSH keys", "Choose a host, or type source > destination for server-to-server access"),
         script_filter("alias_add", "ssha", '/usr/bin/python3 scripts/alias_add.py "$1"', "Create SSH alias", "name=target [--fav] [--tag tag] [--description text]"),
         script_filter("alias_remove", "sshrm", '/usr/bin/python3 scripts/alias_remove.py "$1"', "Remove SSH alias", "Find an Alfred alias to remove"),
         script_filter("history_forget", "sshforget", '/usr/bin/python3 scripts/history_forget.py "$1"', "Forget SSH session", "Remove an entry from Recent"),
@@ -78,6 +79,8 @@ def make_plist():
               "matchstring": action, "outputlabel": label, "uid": uid("route_" + action)}
              for action, label in [("ssh", "SSH"), ("sftp", "SFTP"), ("copy", "Copy"), ("inspect", "Inspect"), ("edit", "Edit")]
              ], "elselabel": "Other", "hideelse": True}},
+        {"type": "alfred.workflow.action.terminalcommand", "uid": uid("terminal_setup"), "version": 1,
+         "config": {"escaping": 0, "script": "{query}"}},
         {"type": "alfred.workflow.action.terminalcommand", "uid": uid("terminal_ssh"), "version": 1,
          "config": {"escaping": 0, "script": "ssh {query}"}},
         {"type": "alfred.workflow.action.terminalcommand", "uid": uid("terminal_sftp"), "version": 1,
@@ -97,6 +100,7 @@ def make_plist():
     ]
     connections = {
         uid("search"): [connection("action")],
+        uid("setup"): [connection("terminal_setup")],
         uid("action"): [connection("route")],
         uid("route"): [connection("terminal_ssh", "route_ssh"), connection("terminal_sftp", "route_sftp"),
                        connection("clipboard", "route_copy"), connection("inspect_view", "route_inspect"),
@@ -113,7 +117,7 @@ def make_plist():
         uid("open_config"): [connection("edit_notification")],
         uid("open_hosts"): [connection("edit_notification")],
     }
-    positions = {"search": (40, 100), "action": (260, 100), "route": (480, 100),
+    positions = {"setup": (40, 1210), "terminal_setup": (260, 1210), "search": (40, 100), "action": (260, 100), "route": (480, 100),
                  "terminal_ssh": (700, 0), "terminal_sftp": (700, 110), "clipboard": (700, 220),
                  "copy_notification": (920, 220), "inspect_view": (700, 330), "edit_notification": (700, 440),
                  "alias_add": (40, 610), "save_alias": (260, 610), "alias_remove": (40, 730),
@@ -131,7 +135,7 @@ def make_plist():
     ]
     return {"bundleid": "in.harshalranjhani.alfred-ssh-manager", "category": "Internet", "createdby": "Harshal Ranjhani",
             "description": "Search, alias, inspect and launch OpenSSH sessions.", "disabled": False,
-            "name": "Alfred SSH Manager", "version": "1.0.1", "webaddress": "",
+            "name": "Alfred SSH Manager", "version": "1.1.0", "webaddress": "",
             "readme": (ROOT / "README.md").read_text(encoding="utf-8"),
             "objects": objects, "connections": connections,
             "uidata": {uid(name): {"xpos": float(x), "ypos": float(y)} for name, (x, y) in positions.items()},

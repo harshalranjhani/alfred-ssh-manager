@@ -1,6 +1,7 @@
 import json
 import os
 import plistlib
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -106,8 +107,8 @@ class WorkflowTests(unittest.TestCase):
         subprocess.run([sys.executable, str(ROOT / "tools" / "build.py")], check=True, capture_output=True, text=True)
         workflow = plistlib.loads((ROOT / "workflow" / "info.plist").read_bytes())
         types = [obj["type"] for obj in workflow["objects"]]
-        self.assertEqual(types.count("alfred.workflow.input.scriptfilter"), 4)
-        self.assertEqual(types.count("alfred.workflow.action.terminalcommand"), 2)
+        self.assertEqual(types.count("alfred.workflow.input.scriptfilter"), 5)
+        self.assertEqual(types.count("alfred.workflow.action.terminalcommand"), 3)
         self.assertIn("alfred.workflow.userinterface.text", types)
         self.assertEqual(workflow["bundleid"], "in.harshalranjhani.alfred-ssh-manager")
         object_ids = {obj["uid"] for obj in workflow["objects"]}
@@ -116,7 +117,7 @@ class WorkflowTests(unittest.TestCase):
             for destination in destinations:
                 self.assertIn(destination["destinationuid"], object_ids)
         with ZipFile(ROOT / "dist" / "Alfred-SSH-Manager.alfredworkflow") as archive:
-            self.assertTrue({"info.plist", "icon.png", "scripts/ssh_search.py", "scripts/history_forget.py", "src/alfred_ssh/discovery.py"}.issubset(archive.namelist()))
+            self.assertTrue({"info.plist", "icon.png", "scripts/ssh_search.py", "scripts/history_forget.py", "scripts/ssh_setup.py", "scripts/setup_action.py", "src/alfred_ssh/setup.py", "src/alfred_ssh/discovery.py"}.issubset(archive.namelist()))
             with tempfile.TemporaryDirectory() as temp:
                 archive.extractall(temp)
                 env = {**os.environ, "SSH_CONFIG": str(Path(temp) / "missing_config"),
@@ -127,6 +128,12 @@ class WorkflowTests(unittest.TestCase):
                 result = subprocess.run([sys.executable, str(Path(temp) / "scripts" / "ssh_search.py"), ":help"],
                                         env=env, capture_output=True, text=True, check=True)
                 self.assertEqual(json.loads(result.stdout)["items"][0]["title"], "SSH Manager")
+                setup = subprocess.run([sys.executable, str(Path(temp) / "scripts" / "ssh_setup.py"), "user@example.com"],
+                                       env=env, capture_output=True, text=True, check=True)
+                command = shlex.split(json.loads(setup.stdout)["items"][0]["arg"])
+                self.assertEqual(command[1], str((Path(temp) / "scripts" / "setup_action.py").resolve()))
+                self.assertEqual(command[2:], ["install", "user@example.com", ""])
+
 
     def test_action_quotes_target_and_records_usage(self):
         with tempfile.TemporaryDirectory() as temp:

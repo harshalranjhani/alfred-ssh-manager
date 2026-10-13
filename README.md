@@ -22,6 +22,16 @@ Useful searches: `ssh :recent`, `ssh :fav`, `ssh :aliases`, `ssh :config`, `ssh 
 
 If a direct connection fails, it may still appear in Recent because the workflow records a launch before SSH exits. Type `sshforget`, find the target, and press Return to remove its history entry. This does not delete SSH config hosts or Alfred aliases.
 
+## Guided key setup
+
+Type `sshsetup` to see key tools and known hosts. Select a host (or type `sshsetup user@server`) and press Return to generate/reuse this Mac’s `~/.ssh/id_ed25519`, install its public key, and test public-key login. Terminal handles the passphrase, server-password, and host-trust prompts. Use a passphrase when prompted; the workflow never stores passwords. Command + Return tests existing access without installing a key.
+
+For server-to-server access, type `sshsetup source > destination`, for example `sshsetup deploy@build-box > deploy@app-box`. Alfred aliases work on both sides. The source generates/keeps its own key; only its public key passes through your Mac to the destination. Your Mac must already be able to authenticate to both servers (password login is fine). The final test runs on the source using the destination’s hostname, user, and port resolved on this Mac. The source needs direct network access; local ProxyJump/ProxyCommand settings are not copied to it. A remote passphrase or host-trust prompt may appear during that test.
+
+The empty `sshsetup` menu also offers key generation, public-key copy, and fingerprint display. These tools use the standard Ed25519 key path; custom IdentityFile keys and other key types are not managed. Existing complete pairs are reused; incomplete pairs stop with an error instead of being overwritten. Copy and fingerprint require an existing public key.
+
+Installation appends to the destination account’s `~/.ssh/authorized_keys`, avoids adding the same Ed25519 key twice, and preserves existing entries and restrictions. It sets `.ssh` permissions to 700 and `authorized_keys` to 600, following [OpenSSH’s public-key setup guidance](https://man.openbsd.org/ssh). Remote hosts need a POSIX shell and OpenSSH; servers using a custom AuthorizedKeysFile or managed key service require manual setup. Setup does not enable password login or change server configuration. If the final test fails, installed keys remain in place and the terminal reports the error; retrying is safe.
+
 ## Aliases
 
 Use `ssha prod=production-api` to create or update an Alfred alias, then `ssh prod` to connect. Add metadata with `ssha prod=production-api --fav --tag work --description "Main production server"`. Use `sshrm prod` to find and remove aliases. These commands only change `aliases.json`, never SSH config. You can also edit that JSON file from an alias result with Shift + Return. Existing favorite, tags, and description are preserved when updating an alias unless replaced by supplied options.
@@ -32,7 +42,7 @@ Use `ssha prod=production-api` to create or update an Alfred alias, then `ssh pr
 
 Known-host discovery ignores hashed names and bracketed port entries. Literal SSH `Host` names are discoverable; wildcard and `Match` rules are left to OpenSSH at connection time. Simple `HostName`, `User`, and `Port` values provide search metadata, while `ssh -G` supplies the effective values for inspection.
 
-Alfred stores mutable files under `$alfred_workflow_data`: `aliases.json` and `history.json`. The workflow stores no credentials or keys. Generated terminal command arguments are shell quoted; `ssh -G` runs with a subprocess argument list.
+Alfred stores mutable files under `$alfred_workflow_data`: `aliases.json` and `history.json`. The workflow data directory stores no credentials or keys; setup keeps keys in the owning machine’s `~/.ssh`. Generated terminal command arguments are shell quoted; `ssh -G` runs with a subprocess argument list.
 
 ## Development
 
