@@ -135,7 +135,7 @@ def make_plist():
     ]
     return {"bundleid": "in.harshalranjhani.alfred-ssh-manager", "category": "Internet", "createdby": "Harshal Ranjhani",
             "description": "Search, alias, inspect and launch OpenSSH sessions.", "disabled": False,
-            "name": "Alfred SSH Manager", "version": "1.1.0", "webaddress": "",
+            "name": "Alfred SSH Manager", "version": "1.1.1", "webaddress": "",
             "readme": (ROOT / "README.md").read_text(encoding="utf-8"),
             "objects": objects, "connections": connections,
             "uidata": {uid(name): {"xpos": float(x), "ypos": float(y)} for name, (x, y) in positions.items()},

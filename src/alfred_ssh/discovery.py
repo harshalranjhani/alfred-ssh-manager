@@ -23,10 +23,12 @@ def discover(settings: Settings) -> tuple[list[HostEntry], list[str]]:
         entries.extend(discover_hosts_file(settings.etc_hosts, "hosts", errors))
     if settings.read_known_hosts:
         entries.extend(discover_known_hosts(settings.known_hosts, errors))
+    alias_targets = {entry.target for entry in entries if entry.alias}
     seen = set()
     unique = []
     for entry in entries:
-        # An alias keeps its own row when the alias name differs from its target.
+        if not entry.alias and entry.target in alias_targets:
+            continue
         if entry.name in seen:
             continue
         seen.add(entry.name)

@@ -971,6 +971,8 @@ Installation appends to the destination account’s `~/.ssh/authorized_keys`, av
 
 Use `ssha prod=production-api` to create or update an Alfred alias, then `ssh prod` to connect. Add metadata with `ssha prod=production-api --fav --tag work --description "Main production server"`. Use `sshrm prod` to find and remove aliases. These commands only change `aliases.json`, never SSH config. You can also edit that JSON file from an alias result with Shift + Return. Existing favorite, tags, and description are preserved when updating an alias unless replaced by supplied options.
 
+Aliases hide discovered entries with the exact same SSH target, so a friendly name replaces the raw target in results. Searching by the target still finds the alias. Removing the alias reveals the original entry again; source files are unchanged. Multiple aliases for the same target remain visible.
+
 ## Host files and configuration
 
 `sshhosts` opens `~/.ssh/etc_hosts` and creates it if needed. Each row uses `/etc/hosts` syntax, for example `10.10.0.10 nas nas.home`. Both names appear in search; selecting `nas.home` executes `ssh nas.home`. `sshconf` opens `~/.ssh/config`. Paths and source toggles are available in Alfred's Workflow Configuration.
@@ -1281,7 +1283,7 @@ If a source file is unreadable or aliases JSON is invalid, Alfred shows a warnin
 		<string>~/.ssh/config</string>
 	</dict>
 	<key>version</key>
-	<string>1.1.0</string>
+	<string>1.1.1</string>
 	<key>webaddress</key>
 	<string></string>
 </dict>

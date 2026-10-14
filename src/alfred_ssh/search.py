@@ -17,7 +17,7 @@ def searchable_text(entry: HostEntry) -> str:
 def _matches(query: str, entry: HostEntry) -> bool:
     haystack = searchable_text(entry).lower()
     words = haystack.replace("-", " ").replace("_", " ").replace(".", " ").split()
-    return all(any(token in word or _subsequence(token, word) for word in words) for token in query.lower().split())
+    return all(token in haystack or any(_subsequence(token, word) for word in words) for token in query.lower().split())
 
 
 def _subsequence(needle: str, word: str) -> bool:

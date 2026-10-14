@@ -70,6 +70,28 @@ class DiscoveryTests(unittest.TestCase):
         self.assertTrue(remove_alias(alias_path, "home"))
         self.assertEqual(load_aliases(alias_path), {})
 
+    def test_alias_hides_exact_target_and_removal_restores_it(self):
+        target = "100.78.105.92"
+        self.settings.known_hosts.write_text(f"{target} ssh-ed25519 AAA\n", encoding="utf-8")
+        self.settings.ssh_config.write_text(f"Host separate-config\n HostName {target}\n", encoding="utf-8")
+        alias_path = self.data / "aliases.json"
+        save_alias(alias_path, "helsinki", {"target": target})
+        record(self.data / "history.json", target)
+        entries, errors = discover(self.settings)
+        self.assertFalse(errors)
+        self.assertEqual([e.name for e in entries], ["helsinki", "separate-config"])
+        for query in ("helsinki", target, ":recent"):
+            items = search_output(entries, errors, query, self.settings)["items"]
+            self.assertEqual([i["title"] for i in items if i["arg"] == target], ["helsinki"])
+        save_alias(alias_path, "second-name", {"target": target})
+        save_alias(alias_path, "admin", {"target": f"root@{target}"})
+        entries, _ = discover(self.settings)
+        self.assertEqual({e.name for e in entries}, {"helsinki", "second-name", "admin", "separate-config"})
+        remove_alias(alias_path, "helsinki")
+        remove_alias(alias_path, "second-name")
+        entries, _ = discover(self.settings)
+        self.assertEqual([e.source for e in entries if e.target == target], ["knownhosts"])
+
     def test_bad_aliases_do_not_hide_good_sources(self):
         self.settings.ssh_config.write_text("Host good\n", encoding="utf-8")
         self.data.mkdir()
